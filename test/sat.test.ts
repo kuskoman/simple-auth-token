@@ -9,8 +9,8 @@ describe("Simple Auth Token", () => {
         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ";
       const secondBase64Payload =
         "eyJzdWIiOiIxMjM4OTAiLCJuYW1lIjoiSm9obmUgRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ";
-      const firstSign = sign(firstBase64Payload, secret);
-      const secondSign = sign(secondBase64Payload, secret);
+      const firstSign = sign({ payload: firstBase64Payload, secret });
+      const secondSign = sign({ payload: secondBase64Payload, secret });
 
       expect(firstSign).not.toEqual(secondSign);
     });
@@ -19,7 +19,7 @@ describe("Simple Auth Token", () => {
       const payload = {
         userId: 2115
       };
-      const encodedToken = encode(payload, secret);
+      const encodedToken = encode({ payload, secret });
       const encodedTokenParts = encodedToken.split(".");
       const encodedPayload = encodedTokenParts[1];
 
@@ -35,14 +35,17 @@ describe("Simple Auth Token", () => {
       it("should sign payload", () => {
         const claimsTokenPart = encodedTokenParts[0];
         const signTokenPart = encodedTokenParts[2];
-        const validSign = sign(claimsTokenPart + "." + encodedPayload, secret);
+        const payload = `${claimsTokenPart}.${encodedPayload}`;
+        const validSign = sign({ payload, secret });
 
         expect(signTokenPart).toEqual(validSign);
       });
 
       describe("when secret is missing", () => {
         it("throws an exception", () => {
-          expect(() => encode(payload, "")).toThrow("Secret can't be empty");
+          expect(() => encode({ payload, secret: "" })).toThrow(
+            "Secret can't be empty"
+          );
         });
       });
     });
@@ -50,20 +53,20 @@ describe("Simple Auth Token", () => {
   describe("verify", () => {
     const claims = "ewogIGV4cDogImtpZWR5xZsiCn0=";
     const payload = "aG9sYSBtdW5kbw==";
-    const content = claims + "." + payload;
+    const content = `${claims}.${payload}`;
 
     it("returns true when token has valid sign", () => {
-      const validSign = sign(content, secret);
+      const validSign = sign({ payload: content, secret });
       const token = content + "." + validSign;
 
-      expect(verify(token, secret)).toBeTruthy();
+      expect(verify({ token, secret })).toBeTruthy();
     });
 
     it("returns false when token has invalid sign", () => {
       const invalidSign = "dadadadadada";
       const token = payload + "." + invalidSign;
 
-      expect(verify(token, secret)).toBeFalsy;
+      expect(verify({ token, secret })).toBeFalsy;
     });
   });
 
@@ -73,8 +76,8 @@ describe("Simple Auth Token", () => {
     };
 
     it("decodes valid token", () => {
-      const validToken = encode(payload, secret);
-      const decodedToken = decode(validToken, secret);
+      const validToken = encode({ payload, secret });
+      const decodedToken = decode({ token: validToken, secret });
 
       expect(decodedToken).toEqual(payload);
     });
@@ -83,13 +86,17 @@ describe("Simple Auth Token", () => {
       const invalidToken =
         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0Ijo.xNTE2MjM5MDIyfQ";
 
-      expect(() => decode(invalidToken, secret)).toThrow("Invalid signature");
+      expect(() => decode({ token: invalidToken, secret })).toThrow(
+        "Invalid signature"
+      );
     });
 
     it("throws exception when token is outdated", () => {
-      const outdatedToken = encode(payload, secret, -100);
+      const outdatedToken = encode({ payload, secret, expiry: -100 });
 
-      expect(() => decode(outdatedToken, secret)).toThrow("Invalid token");
+      expect(() => decode({ token: outdatedToken, secret })).toThrow(
+        "Invalid token"
+      );
     });
   });
 
@@ -99,13 +106,13 @@ describe("Simple Auth Token", () => {
     };
 
     it("returns false when token is outdated", () => {
-      const token = encode(payload, secret, -10);
+      const token = encode({ payload, secret, expiry: -10 });
 
       expect(validate(token)).toEqual(false);
     });
 
     it("returns true when token is not outdated", () => {
-      const token = encode(payload, secret, 10000);
+      const token = encode({ payload, secret, expiry: 10000 });
 
       expect(validate(token)).toEqual(true);
     });
@@ -117,17 +124,24 @@ describe("Simple Auth Token", () => {
     };
 
     it("should allow to refresh token what refresh before time claim is not outdated", () => {
-      const token = encode(payload, secret);
-      const refreshedToken = refresh(token, secret);
-      const decodedRefreshedToken = decode(refreshedToken, secret);
+      const token = encode({ payload, secret });
+      const refreshedToken = refresh({ token, secret });
+      const decodedRefreshedToken = decode({ token: refreshedToken, secret });
 
       expect(decodedRefreshedToken).toEqual(payload);
     });
 
     it("should disallow to refresh token after refresh before time claim expires", () => {
-      const token = encode(payload, secret, 1000, -3000);
+      const token = encode({
+        payload,
+        secret,
+        expiry: 1000,
+        refreshTime: -3000
+      });
 
-      expect(() => refresh(token, secret)).toThrow("Token can't be refreshed");
+      expect(() => refresh({ token, secret })).toThrow(
+        "Token can't be refreshed"
+      );
     });
   });
 });
