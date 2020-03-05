@@ -1,6 +1,6 @@
 {
   "name": "simple-auth-token",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple auth token is a token inspired by JWT, but containing claims in place of header",
   "main": "dist/index.js",
   "scripts": {
@@ -12,11 +12,11 @@
   "license": "MIT",
   "devDependencies": {
     "@types/crypto-js": "^3.1.43",
+    "@types/jest": "^25.1.3",
     "@types/node": "^13.7.7",
     "jest": "^25.1.0",
     "ts-jest": "^25.2.1",
-    "typescript": "^3.8.3",
-    "@types/jest": "^25.1.3"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "crypto-js": "^4.0.0"
