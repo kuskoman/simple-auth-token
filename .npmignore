@@ -1,0 +1,6 @@
+node_modules/
+test/
+src/
+.gitignore
+jest.config.js
+tsconifg.json
