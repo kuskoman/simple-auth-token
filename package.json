@@ -1,0 +1,9 @@
+{
+  "name": "simple-auth-token",
+  "version": "1.0.0",
+  "description": "Simple auth token is a token inspired by JWT, but containing claims in place of header",
+  "main": "dist/index.js",
+  "repository": "git@github.com:kuskoman/simple-auth-token.git",
+  "author": "kkm <kubasurdej@gmail.com>",
+  "license": "MIT"
+}
