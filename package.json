@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "description": "Simple auth token is a token inspired by JWT, but containing claims in place of header",
   "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
   "repository": "git@github.com:kuskoman/simple-auth-token.git",
   "author": "kkm <kubasurdej@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  }
 }
