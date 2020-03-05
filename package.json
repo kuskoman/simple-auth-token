@@ -4,7 +4,8 @@
   "description": "Simple auth token is a token inspired by JWT, but containing claims in place of header",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest"
   },
   "repository": "git@github.com:kuskoman/simple-auth-token.git",
   "author": "kkm <kubasurdej@gmail.com>",
