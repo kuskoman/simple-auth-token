@@ -10,6 +10,11 @@
   "author": "kkm <kubasurdej@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/crypto-js": "^3.1.43",
+    "@types/node": "^13.7.7",
     "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "crypto-js": "^4.0.0"
   }
 }
